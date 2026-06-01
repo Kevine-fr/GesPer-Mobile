@@ -33,3 +33,6 @@ Thumbs.db
 # Coverage
 coverage/
 test/.test_coverage.dart
+
+node_modules
+.env
