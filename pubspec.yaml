@@ -1,0 +1,64 @@
+name: gesper_app
+description: "GesPer — Application Flutter de gestion financière personnelle (consomme l'API GesPer Server)."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management + routing + DI
+  get: ^4.6.6
+
+  # Network
+  dio: ^5.7.0
+  pretty_dio_logger: ^1.4.0
+
+  # Storage
+  get_storage: ^2.1.1
+  flutter_secure_storage: ^10.2.0
+
+  # UI / animations
+  google_fonts: ^8.1.0
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.4.1
+  cupertino_icons: ^1.0.8
+
+  flutter_dotenv: ^5.2.1
+
+  # Charts
+  fl_chart: ^1.2.0
+
+  # Forms / validation
+  flutter_form_builder: ^10.3.0+2
+  form_builder_validators: ^11.0.0
+
+  # OAuth Google
+  url_launcher: ^6.3.1
+  app_links: ^7.0.0
+
+  # Utils
+  intl: ^0.20.2
+  logger: ^2.4.0
+
+  # Localisations Material/Cupertino
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
+    - assets/images/
+    - assets/icons/

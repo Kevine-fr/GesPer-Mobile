@@ -1,0 +1,28 @@
+<!--
+  À insérer dans ios/Runner/Info.plist (à l'intérieur de la balise <dict>) après que
+  `flutter create .` a généré la structure.
+
+  1. Déclarer le scheme custom pour intercepter le retour OAuth2 :
+-->
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string>com.gesper.app.oauth</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>gesper</string>
+        </array>
+    </dict>
+</array>
+
+<!--
+  2. En DEV uniquement, autoriser le HTTP local :
+-->
+<key>NSAppTransportSecurity</key>
+<dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+</dict>

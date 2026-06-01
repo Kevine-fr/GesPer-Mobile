@@ -1,0 +1,29 @@
+<!--
+  À insérer dans android/app/src/main/AndroidManifest.xml après que `flutter create .`
+  a généré la structure de base.
+
+  1. Dans la balise <manifest>, AVANT <application>, ajouter la permission Internet :
+-->
+<uses-permission android:name="android.permission.INTERNET"/>
+
+<!--
+  2. Dans la <activity android:name=".MainActivity"> (l'unique activité), AJOUTER
+     l'intent-filter ci-dessous afin de capturer les retours OAuth2 (deep links
+     gesper://oauth2/redirect?token=...&refreshToken=...) :
+-->
+<intent-filter android:label="@string/app_name" android:autoVerify="true">
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="gesper" android:host="oauth2"/>
+</intent-filter>
+
+<!--
+  3. Sur la balise <application>, ajouter `android:usesCleartextTraffic="true"`
+     uniquement en DEV (si vous appelez l'API en HTTP).
+     Exemple :
+       <application
+           android:label="GesPer"
+           android:icon="@mipmap/ic_launcher"
+           android:usesCleartextTraffic="true">
+-->
