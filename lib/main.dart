@@ -28,7 +28,7 @@ void main() {
 
     // dotenv — on essaie mais on continue si ça plante
     try {
-      await dotenv.load(fileName: '.env');
+      await dotenv.load(fileName: 'assets/config/env');
       debugPrint('[MAIN] 2. dotenv OK, API_BASE_URL=${dotenv.env['API_BASE_URL']}');
     } catch (e, st) {
       debugPrint('[MAIN] 2. dotenv FAILED: $e');
