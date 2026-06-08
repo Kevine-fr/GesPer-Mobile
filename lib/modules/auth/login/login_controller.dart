@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/config/app_config.dart';
 import '../../../app/routes/app_routes.dart';
-import '../../../core/errors/app_exception.dart';
 import '../../../core/utils/app_toast.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/dio_client.dart';
