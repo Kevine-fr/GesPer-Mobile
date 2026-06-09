@@ -14,7 +14,7 @@ abstract class AppStrings {
   static const verificationCode = 'Code de vérification';
   static const loginWithGoogle = 'Continuer avec Google';
   static const forgotPassword = 'Mot de passe oublié ?';
-  static const dontHaveAccount = "Pas encore de compte ?";
+  static const dontHaveAccount = 'Pas encore de compte ?';
   static const alreadyHaveAccount = 'Déjà un compte ?';
   static const createAccount = 'Créer un compte';
 
@@ -46,6 +46,6 @@ abstract class AppStrings {
 
   // Empty
   static const noData = "Aucune donnée à afficher pour l'instant";
-  static const noGains = "Aucun revenu enregistré";
-  static const noSpents = "Aucune dépense enregistrée";
+  static const noGains = 'Aucun revenu enregistré';
+  static const noSpents = 'Aucune dépense enregistrée';
 }
