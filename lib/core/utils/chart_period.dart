@@ -11,17 +11,17 @@ enum ChartPeriod {
 }
 
 extension ChartPeriodX on ChartPeriod {
-  /// Libellé affiché dans le sélecteur (heure, jours, mois, année).
+  /// Libellé affiché dans le sélecteur (Heure, Jours, Mois, Année).
   String get label {
     switch (this) {
       case ChartPeriod.hours:
-        return 'heure';
+        return 'Heure';
       case ChartPeriod.days:
-        return 'jours';
+        return 'Jours';
       case ChartPeriod.months:
-        return 'mois';
+        return 'Mois';
       case ChartPeriod.years:
-        return 'année';
+        return 'Année';
     }
   }
 

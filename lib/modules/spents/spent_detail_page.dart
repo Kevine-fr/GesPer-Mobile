@@ -133,12 +133,14 @@ class SpentDetailPage extends StatelessWidget {
                     icon: Icons.event_rounded,
                     label: 'Créé le',
                     value: s.createdAt != null ? Formatters.dateTime(s.createdAt) : '—',
+                    showDivider: s.updatedAt != null,
                   ),
                   if (s.updatedAt != null)
                     DetailInfoRow(
                       icon: Icons.update_rounded,
-                      label: 'Modifié le',
+                      label: 'Modifié',
                       value: Formatters.dateTime(s.updatedAt),
+                      showDivider: false,
                     ),
                 ],
               ),

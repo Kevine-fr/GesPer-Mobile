@@ -30,7 +30,7 @@ abstract class AppStrings {
   // Dashboard
   static const balance = 'Solde';
   static const totalGains = 'Total revenus';
-  static const totalSpents = 'Total dépenses';
+  static const totalSpents = 'T dépenses';
   static const monthlyOverview = 'Vue mensuelle';
   static const byCategorie = 'Par catégorie';
   static const recentTransactions = 'Transactions récentes';

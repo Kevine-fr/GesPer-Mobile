@@ -22,11 +22,21 @@ abstract class AppTheme {
       error: AppColors.spent,
     );
 
-    final textTheme = GoogleFonts.interTextTheme(
+    final baseText = GoogleFonts.interTextTheme(
       ThemeData(brightness: brightness).textTheme,
     ).apply(
       bodyColor: isDark ? AppColors.darkOnBg : AppColors.lightOnBg,
       displayColor: isDark ? AppColors.darkOnBg : AppColors.lightOnBg,
+    );
+
+    // Resserre le tracking des grands titres/chiffres (signature « fintech »).
+    final textTheme = baseText.copyWith(
+      displayLarge: baseText.displayLarge?.copyWith(letterSpacing: -1.0, fontWeight: FontWeight.w800),
+      displayMedium: baseText.displayMedium?.copyWith(letterSpacing: -0.8, fontWeight: FontWeight.w800),
+      displaySmall: baseText.displaySmall?.copyWith(letterSpacing: -0.6, fontWeight: FontWeight.w800),
+      headlineMedium: baseText.headlineMedium?.copyWith(letterSpacing: -0.5, fontWeight: FontWeight.w700),
+      headlineSmall: baseText.headlineSmall?.copyWith(letterSpacing: -0.4, fontWeight: FontWeight.w700),
+      titleLarge: baseText.titleLarge?.copyWith(letterSpacing: -0.3, fontWeight: FontWeight.w700),
     );
 
     return ThemeData(
@@ -54,7 +64,7 @@ abstract class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           side: BorderSide(
             color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
             width: 1,
@@ -68,35 +78,35 @@ abstract class AppTheme {
         space: 1,
       ),
 
+      // Champs « borderless filled » au repos, accent net au focus (style néo-banque).
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
         hintStyle: TextStyle(color: isDark ? AppColors.darkMuted : AppColors.lightMuted),
         labelStyle: TextStyle(color: isDark ? AppColors.darkMuted : AppColors.lightMuted),
+        floatingLabelStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
         prefixIconColor: isDark ? AppColors.darkMuted : AppColors.lightMuted,
         suffixIconColor: isDark ? AppColors.darkMuted : AppColors.lightMuted,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder, width: 1),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(
-              color: isDark ? AppColors.darkBorder : AppColors.lightBorder, width: 1),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.spent, width: 1.2),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.spent, width: 1.4),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.spent, width: 1.6),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.spent, width: 1.8),
         ),
       ),
 
@@ -152,31 +162,61 @@ abstract class AppTheme {
       ),
 
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightOnBg,
+        backgroundColor: isDark ? AppColors.darkSurfaceAlt : AppColors.lightOnBg,
         contentTextStyle: TextStyle(
           color: isDark ? AppColors.darkOnBg : Colors.white,
           fontWeight: FontWeight.w500,
         ),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+        insetPadding: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       dialogTheme: DialogThemeData(
         backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
+        titleTextStyle: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
       ),
 
       chipTheme: ChipThemeData(
         backgroundColor: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt,
+        selectedColor: AppColors.primary.withValues(alpha: 0.16),
+        checkmarkColor: AppColors.primary,
         side: BorderSide.none,
-        labelStyle: textTheme.labelMedium,
+        labelStyle: textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+        secondaryLabelStyle: textTheme.labelMedium?.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w700,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
       ),
 
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      popupMenuTheme: PopupMenuThemeData(
+        color: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
+        ),
+      ),
+
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        elevation: 4,
+        elevation: 6,
+        highlightElevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
     );
   }

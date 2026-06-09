@@ -77,7 +77,7 @@ class FinanceHealthCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       FinanceInsights.healthAdvice(score, hasData: hasData),
-                      style: TextStyle(fontSize: 12.5, color: AppColors.lightMuted, height: 1.35),
+                      style: const TextStyle(fontSize: 12.5, color: AppColors.lightMuted, height: 1.35),
                     ),
                     if (hasData) ...[
                       const SizedBox(height: 12),

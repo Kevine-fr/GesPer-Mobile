@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,7 @@ import 'package:get/get.dart';
 import '../../app/routes/app_routes.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
+import '../../core/widgets/ambient_background.dart';
 import '../dashboard/dashboard_page.dart';
 import '../gains/gains_page.dart';
 import '../profile/profile_page.dart';
@@ -25,23 +28,25 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: Obx(() => AnimatedSwitcher(
-            duration: const Duration(milliseconds: 350),
-            transitionBuilder: (child, animation) => FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(0, 0.04),
-                  end: Offset.zero,
-                ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-                child: child,
+      body: AmbientBackground(
+        child: Obx(() => AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.04),
+                    end: Offset.zero,
+                  ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+                  child: child,
+                ),
               ),
-            ),
-            child: KeyedSubtree(
-              key: ValueKey(controller.currentIndex.value),
-              child: _pages[controller.currentIndex.value],
-            ),
-          )),
+              child: KeyedSubtree(
+                key: ValueKey(controller.currentIndex.value),
+                child: _pages[controller.currentIndex.value],
+              ),
+            )),
+      ),
       bottomNavigationBar: _AnimatedBottomBar(),
       floatingActionButton: Obx(() {
         final i = controller.currentIndex.value;
@@ -71,24 +76,37 @@ class _AnimatedBottomBar extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.10),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Obx(() => Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: (isDark ? AppColors.darkSurface : Colors.white)
+                  .withValues(alpha: isDark ? 0.62 : 0.72),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.white.withValues(alpha: 0.9),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Obx(() => Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
                   _NavItem(
                     index: 0,
                     icon: Icons.dashboard_rounded,
@@ -115,8 +133,11 @@ class _AnimatedBottomBar extends StatelessWidget {
                     label: AppStrings.profile,
                     selected: controller.currentIndex.value == 3,
                   ),
-                ],
-              )),
+                      ],
+                    )),
+              ),
+            ),
+          ),
         ),
       ),
     );

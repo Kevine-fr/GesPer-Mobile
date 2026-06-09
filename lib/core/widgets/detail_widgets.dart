@@ -160,12 +160,16 @@ class DetailSectionCard extends StatelessWidget {
   }
 }
 
-/// Ligne « libellé : valeur » pour les informations.
+/// Ligne d'information : pastille d'icône + libellé (au-dessus) et valeur
+/// (en-dessous, pleine largeur). La valeur n'est jamais tronquée.
 class DetailInfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
   final Color? valueColor;
+
+  /// Affiche un séparateur fin sous la ligne (false pour la dernière).
+  final bool showDivider;
 
   const DetailInfoRow({
     super.key,
@@ -173,32 +177,62 @@ class DetailInfoRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.valueColor,
+    this.showDivider = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 7),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: AppColors.lightMuted),
-          const SizedBox(width: 10),
-          Text(label, style: TextStyle(fontSize: 13, color: AppColors.lightMuted)),
-          const Spacer(),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w600,
-                color: valueColor,
+    final accent = valueColor ?? AppColors.primary;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 17, color: accent),
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.lightMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: valueColor,
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        if (showDivider)
+          Divider(height: 1, thickness: 1, color: Theme.of(context).dividerColor.withValues(alpha: 0.5)),
+      ],
     );
   }
 }

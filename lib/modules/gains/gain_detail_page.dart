@@ -123,12 +123,14 @@ class GainDetailPage extends StatelessWidget {
                     icon: Icons.event_rounded,
                     label: 'Créé le',
                     value: g.createdAt != null ? Formatters.dateTime(g.createdAt) : '—',
+                    showDivider: g.updatedAt != null,
                   ),
                   if (g.updatedAt != null)
                     DetailInfoRow(
                       icon: Icons.update_rounded,
-                      label: 'Modifié le',
+                      label: 'Modifié',
                       value: Formatters.dateTime(g.updatedAt),
+                      showDivider: false,
                     ),
                 ],
               ),
