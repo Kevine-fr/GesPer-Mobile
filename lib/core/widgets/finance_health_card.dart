@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../utils/finance_insights.dart';
 import '../values/app_colors.dart';
+import 'glass_card.dart';
 import 'percent_badge.dart';
 
 /// Carte « Santé financière » : jauge animée + score + conseil.
@@ -30,12 +31,13 @@ class FinanceHealthCard extends StatelessWidget {
     final savings = FinanceInsights.savingsRate(totalGains, totalSpents);
     final spending = FinanceInsights.spendingRate(totalGains, totalSpents);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: softShadow(isDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

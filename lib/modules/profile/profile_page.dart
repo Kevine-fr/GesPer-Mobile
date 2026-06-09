@@ -7,6 +7,7 @@ import '../../core/theme/theme_controller.dart';
 import '../../core/utils/app_toast.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/theme_toggle.dart';
 import '../../data/services/auth_service.dart';
 
@@ -207,8 +208,9 @@ class _SettingsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: softShadow(Theme.of(context).brightness == Brightness.dark),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(children: children),
     );
   }

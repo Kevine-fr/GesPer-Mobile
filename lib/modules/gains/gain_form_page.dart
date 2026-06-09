@@ -129,7 +129,6 @@ class _GainFormPageState extends State<GainFormPage> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,

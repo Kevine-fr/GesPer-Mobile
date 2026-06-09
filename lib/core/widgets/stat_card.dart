@@ -140,7 +140,6 @@ class SmallStatCard extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: color.withValues(alpha: isDark ? 0.12 : 0.08),

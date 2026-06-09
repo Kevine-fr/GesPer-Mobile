@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../utils/formatters.dart';
 import '../values/app_colors.dart';
+import 'glass_card.dart';
 import 'percent_badge.dart';
 
 /// En-tête « héros » d'une page de détail : gros montant + libellé + chip catégorie.
@@ -133,12 +134,13 @@ class DetailSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: softShadow(isDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

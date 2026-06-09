@@ -11,6 +11,7 @@ import '../../core/values/app_strings.dart';
 import '../../core/widgets/charts.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/finance_health_card.dart';
+import '../../core/widgets/glass_card.dart';
 import '../../core/widgets/shimmers.dart';
 import '../../core/widgets/stat_card.dart';
 import '../../core/widgets/theme_toggle.dart';
@@ -226,11 +227,6 @@ class _PeriodChips extends StatelessWidget {
                     : null,
                 color: isSel ? null : Theme.of(context).cardTheme.color,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSel
-                      ? Colors.transparent
-                      : Theme.of(context).dividerColor,
-                ),
               ),
               child: Text(
                 p.label,
@@ -315,7 +311,7 @@ class _SectionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Theme.of(context).dividerColor),
+        boxShadow: softShadow(Theme.of(context).brightness == Brightness.dark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -374,7 +370,7 @@ class _RecentTransactions extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardTheme.color,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Theme.of(context).dividerColor),
+          boxShadow: softShadow(Theme.of(context).brightness == Brightness.dark),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

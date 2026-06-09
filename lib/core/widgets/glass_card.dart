@@ -88,6 +88,16 @@ List<BoxShadow> glowShadow(Color color, {double opacity = 0.35}) => [
       ),
     ];
 
+/// Ombre neutre subtile pour les cartes « surface » (sans bordure).
+List<BoxShadow> softShadow(bool isDark) => [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.05),
+        blurRadius: 20,
+        spreadRadius: -6,
+        offset: const Offset(0, 10),
+      ),
+    ];
+
 /// Petit point lumineux décoratif (utilisé en coin de carte pour la profondeur).
 class DecorBlob extends StatelessWidget {
   final double size;

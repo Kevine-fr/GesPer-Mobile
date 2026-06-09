@@ -65,10 +65,6 @@ abstract class AppTheme {
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-            width: 1,
-          ),
         ),
       ),
 
@@ -196,10 +192,10 @@ abstract class AppTheme {
 
       popupMenuTheme: PopupMenuThemeData(
         color: isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurface,
-        elevation: 0,
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
         ),
       ),
 

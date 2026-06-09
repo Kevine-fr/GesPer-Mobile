@@ -179,7 +179,6 @@ class _SpentFormPageState extends State<SpentFormPage> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardTheme.color,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
@@ -240,9 +239,8 @@ class _AdviceCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
