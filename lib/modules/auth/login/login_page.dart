@@ -104,12 +104,12 @@ class LoginPage extends GetView<LoginController> {
                   ],
                 ).animate(delay: 500.ms).fadeIn(duration: 350.ms),
                 const SizedBox(height: 18),
-                OutlinedButton.icon(
-                  onPressed: controller.loginWithGoogle,
-                  icon: const Icon(Icons.g_mobiledata_rounded, size: 28),
-                  label: const Text(AppStrings.loginWithGoogle),
-                ).animate(delay: 560.ms).fadeIn(duration: 350.ms),
-                const SizedBox(height: 24),
+                // OutlinedButton.icon(
+                //   onPressed: controller.loginWithGoogle,
+                //   icon: const Icon(Icons.g_mobiledata_rounded, size: 28),
+                //   label: const Text(AppStrings.loginWithGoogle),
+                // ).animate(delay: 560.ms).fadeIn(duration: 350.ms),
+                // const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

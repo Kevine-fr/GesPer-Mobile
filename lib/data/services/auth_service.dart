@@ -19,12 +19,12 @@ class AuthService extends GetxService {
   final RxBool isAuthenticated = false.obs;
 
   Future<bool> bootstrap() async {
-    final access = await _tokens.readAccessToken();
-    if (access == null || access.isEmpty) {
-      isAuthenticated.value = false;
-      return false;
-    }
     try {
+      final access = await _tokens.readAccessToken();
+      if (access == null || access.isEmpty) {
+        isAuthenticated.value = false;
+        return false;
+      }
       final user = await _userProvider.me();
       currentUser.value = user;
       isAuthenticated.value = true;
