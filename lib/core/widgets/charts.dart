@@ -68,8 +68,14 @@ class MonthlyTrendChart extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 28,
+                  interval: 1,
                   getTitlesWidget: (value, _) {
                     final i = value.toInt();
+                    if (value != i.toDouble()) return const SizedBox.shrink();
+                    final count = gains.length > spents.length ? gains.length : spents.length;
+                    final step = (count / 6).ceil().clamp(1, count);
+                    // Affiche un libellé sur [step] pour éviter le chevauchement.
+                    if (i % step != 0 && i != count - 1) return const SizedBox.shrink();
                     final label = i < gains.length
                         ? gains[i].label
                         : (i < spents.length ? spents[i].label : '');
@@ -325,6 +331,8 @@ class BalanceBarChart extends StatelessWidget {
                 getTitlesWidget: (v, _) {
                   final i = v.toInt();
                   if (i < 0 || i >= points.length) return const SizedBox();
+                  final step = (points.length / 6).ceil().clamp(1, points.length);
+                  if (i % step != 0 && i != points.length - 1) return const SizedBox();
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(points[i].label,

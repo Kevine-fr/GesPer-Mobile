@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
+import '../../core/utils/chart_period.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
@@ -25,6 +26,7 @@ class DashboardPage extends StatelessWidget {
     final gainCtrl = GainController.to;
     final spentCtrl = SpentController.to;
     final catCtrl = CategorieController.to;
+    final homeCtrl = HomeController.to;
     final auth = AuthService.to;
 
     return SafeArea(
@@ -34,6 +36,8 @@ class DashboardPage extends StatelessWidget {
         if (loading && gainCtrl.gains.isEmpty && spentCtrl.spents.isEmpty) {
           return const ShimmerDashboard();
         }
+
+        final period = homeCtrl.chartPeriod.value;
 
         final totalGains = gainCtrl.total;
         final totalSpents = spentCtrl.total;
@@ -87,12 +91,15 @@ class DashboardPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              _PeriodChips(selected: period),
+              const SizedBox(height: 14),
               _SectionCard(
                 title: AppStrings.monthlyOverview,
                 child: MonthlyTrendChart(
-                  gains: _buildMonthlySeries(gainCtrl.gains.map((g) => _Point(g.createdAt, g.sum))),
-                  spents:
-                      _buildMonthlySeries(spentCtrl.spents.map((s) => _Point(s.createdAt, s.value))),
+                  gains: _buildSeries(
+                      gainCtrl.gains.map((g) => _Point(g.createdAt, g.sum)), period),
+                  spents: _buildSeries(
+                      spentCtrl.spents.map((s) => _Point(s.createdAt, s.value)), period),
                 ),
               ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.05, end: 0),
               const SizedBox(height: 16),
@@ -111,9 +118,9 @@ class DashboardPage extends StatelessWidget {
               ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.05, end: 0),
               const SizedBox(height: 16),
               _SectionCard(
-                title: 'Solde par mois',
+                title: 'Solde par ${period.label}',
                 child: BalanceBarChart(
-                  points: _buildBalanceByMonth(gainCtrl, spentCtrl),
+                  points: _buildBalanceSeries(gainCtrl, spentCtrl, period),
                 ),
               ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.05, end: 0),
               const SizedBox(height: 16),
@@ -125,28 +132,28 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  static List<MonthlyPoint> _buildMonthlySeries(Iterable<_Point> rawPoints) {
-    final now = DateTime.now();
-    final months = List.generate(6, (i) {
-      final d = DateTime(now.year, now.month - 5 + i);
-      return d;
-    });
+  /// Agrège des points dans les segments de la [period] choisie, terminant maintenant.
+  static List<MonthlyPoint> _buildSeries(
+      Iterable<_Point> rawPoints, ChartPeriod period) {
+    final buckets = period.buckets(DateTime.now());
     final byKey = <String, num>{};
     for (final p in rawPoints) {
       if (p.date == null) continue;
-      final key = '${p.date!.year}-${p.date!.month}';
+      final key = period.keyOf(p.date!);
       byKey[key] = (byKey[key] ?? 0) + p.value;
     }
-    return months
-        .map((m) => MonthlyPoint(
-            Formatters.monthShort(m), byKey['${m.year}-${m.month}'] ?? 0))
+    return buckets
+        .map((b) => MonthlyPoint(
+            period.formatLabel(b), byKey[period.keyOf(b)] ?? 0))
         .toList();
   }
 
-  static List<MonthlyPoint> _buildBalanceByMonth(
-      GainController g, SpentController s) {
-    final gains = _buildMonthlySeries(g.gains.map((g) => _Point(g.createdAt, g.sum)));
-    final spents = _buildMonthlySeries(s.spents.map((s) => _Point(s.createdAt, s.value)));
+  static List<MonthlyPoint> _buildBalanceSeries(
+      GainController g, SpentController s, ChartPeriod period) {
+    final gains =
+        _buildSeries(g.gains.map((g) => _Point(g.createdAt, g.sum)), period);
+    final spents =
+        _buildSeries(s.spents.map((s) => _Point(s.createdAt, s.value)), period);
     return List.generate(gains.length, (i) {
       final delta = gains[i].value - spents[i].value;
       return MonthlyPoint(gains[i].label, delta);
@@ -179,6 +186,59 @@ class _Point {
   final DateTime? date;
   final num value;
   _Point(this.date, this.value);
+}
+
+/// Sélecteur de granularité (s · min · h · j · mois · année) des diagrammes.
+class _PeriodChips extends StatelessWidget {
+  final ChartPeriod selected;
+  const _PeriodChips({required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 38,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.zero,
+        itemCount: ChartPeriod.values.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, i) {
+          final p = ChartPeriod.values[i];
+          final isSel = p == selected;
+          return GestureDetector(
+            onTap: () => HomeController.to.setChartPeriod(p),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              decoration: BoxDecoration(
+                gradient: isSel
+                    ? const LinearGradient(colors: AppColors.primaryGradient)
+                    : null,
+                color: isSel ? null : Theme.of(context).cardTheme.color,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isSel
+                      ? Colors.transparent
+                      : Theme.of(context).dividerColor,
+                ),
+              ),
+              child: Text(
+                p.label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: isSel ? Colors.white : AppColors.lightMuted,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ).animate(delay: 150.ms).fadeIn().slideY(begin: 0.1, end: 0);
+  }
 }
 
 class _Header extends StatelessWidget {
