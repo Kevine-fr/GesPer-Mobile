@@ -3,11 +3,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 import '../../core/utils/app_toast.dart';
+import '../../core/utils/finance_insights.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/utils/validators.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
 import '../../core/widgets/app_primary_button.dart';
+import '../../core/widgets/percent_badge.dart';
 import '../../data/models/categorie_model.dart';
 import '../../data/models/gain_model.dart';
 import '../../data/models/spent_model.dart';
@@ -49,6 +51,9 @@ class _SpentFormPageState extends State<SpentFormPage> {
         if (mounted) setState(() {});
       });
     }
+    // Recalcule le conseil en direct à chaque frappe sur le montant.
+    _valueCtrl.addListener(() => setState(() {}));
+    _libelleCtrl.addListener(() => setState(() {}));
   }
 
   @override
@@ -58,11 +63,26 @@ class _SpentFormPageState extends State<SpentFormPage> {
     super.dispose();
   }
 
+  num get _amount => num.tryParse(_valueCtrl.text.replaceAll(',', '.')) ?? 0;
+
+  /// Solde disponible avant cette dépense (on retire la dépense en cours d'édition).
+  num get _balanceBefore {
+    final base = SpentController.to.total - (_editing?.value ?? 0);
+    return GainController.to.total - base;
+  }
+
   @override
   Widget build(BuildContext context) {
     final catCtrl = CategorieController.to;
     final c = SpentController.to;
     final isEdit = _editing != null;
+    final advice = _amount > 0
+        ? FinanceInsights.adviseExpense(
+            amount: _amount,
+            balance: _balanceBefore,
+            incomeAmount: _linkedGain?.sum,
+          )
+        : null;
 
     return Scaffold(
       appBar: AppBar(title: Text(isEdit ? 'Modifier la dépense' : 'Nouvelle dépense')),
@@ -73,6 +93,15 @@ class _SpentFormPageState extends State<SpentFormPage> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
             children: [
+              _FormHero(
+                title: _libelleCtrl.text.trim().isEmpty
+                    ? (isEdit ? 'Dépense' : 'Nouvelle dépense')
+                    : _libelleCtrl.text.trim(),
+                amount: _amount,
+                isGain: false,
+                share: advice?.balanceShare,
+              ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _libelleCtrl,
                 textInputAction: TextInputAction.next,
@@ -132,7 +161,19 @@ class _SpentFormPageState extends State<SpentFormPage> {
                   onChanged: (g) => setState(() => _linkedGain = g),
                 );
               }).animate(delay: 240.ms).fadeIn().slideX(begin: -0.05, end: 0),
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
+              // Conseil dynamique sur l'impact de la dépense.
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, anim) => SizeTransition(
+                  sizeFactor: anim,
+                  child: FadeTransition(opacity: anim, child: child),
+                ),
+                child: advice == null
+                    ? const SizedBox(width: double.infinity)
+                    : _AdviceCard(key: ValueKey(advice.title), advice: advice),
+              ),
+              const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
@@ -184,5 +225,140 @@ class _SpentFormPageState extends State<SpentFormPage> {
       AppToast.success(isEdit ? 'Dépense modifiée.' : 'Dépense ajoutée.');
       Get.back();
     }
+  }
+}
+
+/// Carte de conseil affichée pendant la saisie d'une dépense.
+class _AdviceCard extends StatelessWidget {
+  final ExpenseAdvice advice;
+  const _AdviceCard({super.key, required this.advice});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = advice.color;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(advice.icon, color: color, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        advice.title,
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: color),
+                      ),
+                    ),
+                    PercentBadge(value: advice.balanceShare, color: color, icon: Icons.account_balance_wallet_rounded),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  advice.message,
+                  style: const TextStyle(fontSize: 12.5, height: 1.35),
+                ),
+                const SizedBox(height: 10),
+                PercentBar(percent: advice.balanceShare, color: color, height: 7),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Aperçu « héros » en haut du formulaire : montant en direct + part du solde.
+class _FormHero extends StatelessWidget {
+  final String title;
+  final num amount;
+  final bool isGain;
+  final double? share;
+
+  const _FormHero({
+    required this.title,
+    required this.amount,
+    required this.isGain,
+    this.share,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final gradient = isGain ? AppColors.gainGradient : AppColors.spentGradient;
+    final color = isGain ? AppColors.gain : AppColors.spent;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(isGain ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                  color: Colors.white70, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (share != null && share! > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Text(
+                    '${FinanceInsights.formatPercent(share!)} du solde',
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0, end: amount.toDouble()),
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+            builder: (_, v, __) => Text(
+              Formatters.money(v),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.6,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 350.ms).slideY(begin: 0.08, end: 0);
   }
 }

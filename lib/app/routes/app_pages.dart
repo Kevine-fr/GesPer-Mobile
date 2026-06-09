@@ -8,9 +8,11 @@ import '../../modules/auth/verify_code/verify_code_binding.dart';
 import '../../modules/auth/verify_code/verify_code_page.dart';
 import '../../modules/categories/categories_binding.dart';
 import '../../modules/categories/categories_page.dart';
+import '../../modules/gains/gain_detail_page.dart';
 import '../../modules/gains/gain_form_page.dart';
 import '../../modules/home/home_binding.dart';
 import '../../modules/home/home_page.dart';
+import '../../modules/spents/spent_detail_page.dart';
 import '../../modules/spents/spent_form_page.dart';
 import '../../modules/splash/splash_binding.dart';
 import '../../modules/splash/splash_page.dart';
@@ -60,9 +62,19 @@ abstract class AppPages {
       transition: Transition.downToUp,
     ),
     GetPage(
+      name: Routes.gainDetail,
+      page: () => const GainDetailPage(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
       name: Routes.spentForm,
       page: () => const SpentFormPage(),
       transition: Transition.downToUp,
+    ),
+    GetPage(
+      name: Routes.spentDetail,
+      page: () => const SpentDetailPage(),
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: Routes.categories,

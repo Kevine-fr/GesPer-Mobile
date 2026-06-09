@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
+import '../../core/utils/finance_insights.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
@@ -11,6 +12,7 @@ import '../../core/widgets/shimmers.dart';
 import '../../core/widgets/theme_toggle.dart';
 import '../../core/widgets/transaction_widgets.dart';
 import '../categories/categorie_controller.dart';
+import '../spents/spent_controller.dart';
 import 'gain_controller.dart';
 
 class GainsPage extends StatelessWidget {
@@ -39,14 +41,20 @@ class GainsPage extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Obx(() => TotalBanner(
-                  total: c.total,
-                  count: c.gains.length,
-                  color: AppColors.gain,
-                  gradient: AppColors.gainGradient,
-                  label: AppStrings.totalGains,
-                  icon: Icons.trending_up_rounded,
-                )),
+            child: Obx(() {
+              final rate = FinanceInsights.savingsRate(c.total, SpentController.to.total);
+              return TotalBanner(
+                total: c.total,
+                count: c.gains.length,
+                color: AppColors.gain,
+                gradient: AppColors.gainGradient,
+                label: AppStrings.totalGains,
+                icon: Icons.trending_up_rounded,
+                caption: c.total > 0
+                    ? '${FinanceInsights.formatPercent(rate.clamp(0, 100).toDouble())} épargnés'
+                    : null,
+              );
+            }),
           ),
           const SizedBox(height: 12),
           Expanded(
@@ -93,7 +101,8 @@ class GainsPage extends StatelessWidget {
                         subtitle: '${cat?.title ?? "—"} · ${Formatters.relative(g.createdAt)}',
                         amount: g.sum,
                         isGain: true,
-                        onTap: () => Get.toNamed(Routes.gainForm, arguments: g),
+                        percent: FinanceInsights.percent(g.sum, c.total),
+                        onTap: () => Get.toNamed(Routes.gainDetail, arguments: g),
                       ).animate().fadeIn(duration: 280.ms, delay: (i * 50).ms).slideX(begin: 0.05, end: 0),
                     );
                   },

@@ -4,8 +4,6 @@ import '../../app/config/app_config.dart';
 
 /// Granularité temporelle utilisée pour filtrer les diagrammes du tableau de bord.
 enum ChartPeriod {
-  seconds,
-  minutes,
   hours,
   days,
   months,
@@ -13,17 +11,13 @@ enum ChartPeriod {
 }
 
 extension ChartPeriodX on ChartPeriod {
-  /// Libellé court affiché dans le sélecteur (s, min, h, j, mois, année).
+  /// Libellé affiché dans le sélecteur (heure, jours, mois, année).
   String get label {
     switch (this) {
-      case ChartPeriod.seconds:
-        return 's';
-      case ChartPeriod.minutes:
-        return 'min';
       case ChartPeriod.hours:
-        return 'h';
+        return 'heure';
       case ChartPeriod.days:
-        return 'j';
+        return 'jours';
       case ChartPeriod.months:
         return 'mois';
       case ChartPeriod.years:
@@ -34,10 +28,6 @@ extension ChartPeriodX on ChartPeriod {
   /// Nombre de segments affichés sur l'axe horizontal.
   int get bucketCount {
     switch (this) {
-      case ChartPeriod.seconds:
-        return 12;
-      case ChartPeriod.minutes:
-        return 12;
       case ChartPeriod.hours:
         return 12;
       case ChartPeriod.days:
@@ -52,10 +42,6 @@ extension ChartPeriodX on ChartPeriod {
   /// Tronque une date au début de son segment.
   DateTime truncate(DateTime d) {
     switch (this) {
-      case ChartPeriod.seconds:
-        return DateTime(d.year, d.month, d.day, d.hour, d.minute, d.second);
-      case ChartPeriod.minutes:
-        return DateTime(d.year, d.month, d.day, d.hour, d.minute);
       case ChartPeriod.hours:
         return DateTime(d.year, d.month, d.day, d.hour);
       case ChartPeriod.days:
@@ -70,10 +56,6 @@ extension ChartPeriodX on ChartPeriod {
   /// Décale une date de [n] segments (n peut être négatif).
   DateTime step(DateTime d, int n) {
     switch (this) {
-      case ChartPeriod.seconds:
-        return d.add(Duration(seconds: n));
-      case ChartPeriod.minutes:
-        return d.add(Duration(minutes: n));
       case ChartPeriod.hours:
         return d.add(Duration(hours: n));
       case ChartPeriod.days:
@@ -88,10 +70,6 @@ extension ChartPeriodX on ChartPeriod {
   /// Libellé d'un segment pour l'axe horizontal.
   String formatLabel(DateTime d) {
     switch (this) {
-      case ChartPeriod.seconds:
-        return DateFormat('mm:ss', AppConfig.defaultLocale).format(d);
-      case ChartPeriod.minutes:
-        return DateFormat('HH:mm', AppConfig.defaultLocale).format(d);
       case ChartPeriod.hours:
         return DateFormat("HH'h'", AppConfig.defaultLocale).format(d);
       case ChartPeriod.days:

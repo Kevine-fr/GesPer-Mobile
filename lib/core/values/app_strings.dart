@@ -35,6 +35,18 @@ abstract class AppStrings {
   static const byCategorie = 'Par catégorie';
   static const recentTransactions = 'Transactions récentes';
   static const seeAll = 'Voir tout';
+  static const financialHealth = 'Santé financière';
+  static const savingsRate = "Taux d'épargne";
+  static const spendingRate = 'Taux de dépense';
+
+  // Détails
+  static const detail = 'Détail';
+  static const gainDetail = 'Détail du revenu';
+  static const spentDetail = 'Détail de la dépense';
+  static const shareOfTotal = 'Part du total';
+  static const shareOfBalance = 'Part du solde';
+  static const shareOfIncome = 'Part du revenu lié';
+  static const information = 'Informations';
 
   // Actions
   static const add = 'Ajouter';

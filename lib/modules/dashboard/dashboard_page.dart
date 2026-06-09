@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 
 import '../../app/routes/app_routes.dart';
 import '../../core/utils/chart_period.dart';
+import '../../core/utils/finance_insights.dart';
 import '../../core/utils/formatters.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
 import '../../core/widgets/charts.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/finance_health_card.dart';
 import '../../core/widgets/shimmers.dart';
 import '../../core/widgets/stat_card.dart';
 import '../../core/widgets/theme_toggle.dart';
@@ -42,6 +44,7 @@ class DashboardPage extends StatelessWidget {
         final totalGains = gainCtrl.total;
         final totalSpents = spentCtrl.total;
         final balance = totalGains - totalSpents;
+        final savingsRate = FinanceInsights.savingsRate(totalGains, totalSpents);
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -64,7 +67,9 @@ class DashboardPage extends StatelessWidget {
                 gradient: balance >= 0
                     ? AppColors.primaryGradient
                     : AppColors.spentGradient,
-                subtitle: balance >= 0 ? 'Bonne maîtrise 👍' : 'Attention 🔥',
+                subtitle: totalGains > 0
+                    ? '${FinanceInsights.formatPercent(savingsRate.clamp(-999, 999).toDouble(), decimals: 0)} épargnés'
+                    : (balance >= 0 ? 'Bonne maîtrise 👍' : 'Attention 🔥'),
               ),
               const SizedBox(height: 12),
               Row(
@@ -90,6 +95,8 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+              FinanceHealthCard(totalGains: totalGains, totalSpents: totalSpents),
               const SizedBox(height: 20),
               _PeriodChips(selected: period),
               const SizedBox(height: 14),
@@ -335,6 +342,8 @@ class _RecentTransactions extends StatelessWidget {
     final catCtrl = CategorieController.to;
 
     return Obx(() {
+      final totalGains = gainCtrl.total;
+      final totalSpents = spentCtrl.total;
       final txs = <_TxRow>[
         for (final g in gainCtrl.gains)
           _TxRow(
@@ -343,6 +352,8 @@ class _RecentTransactions extends StatelessWidget {
             category: catCtrl.byId(g.categorieId)?.title ?? '',
             amount: g.sum,
             date: g.createdAt,
+            percent: FinanceInsights.percent(g.sum, totalGains),
+            onTap: () => Get.toNamed(Routes.gainDetail, arguments: g),
           ),
         for (final s in spentCtrl.spents)
           _TxRow(
@@ -351,6 +362,8 @@ class _RecentTransactions extends StatelessWidget {
             category: catCtrl.byId(s.categorieId)?.title ?? '',
             amount: s.value,
             date: s.createdAt,
+            percent: FinanceInsights.percent(s.value, totalSpents),
+            onTap: () => Get.toNamed(Routes.spentDetail, arguments: s),
           ),
       ];
       txs.sort((a, b) => (b.date ?? DateTime(0)).compareTo(a.date ?? DateTime(0)));
@@ -406,12 +419,16 @@ class _TxRow {
   final String category;
   final num amount;
   final DateTime? date;
+  final double percent;
+  final VoidCallback onTap;
   _TxRow({
     required this.isGain,
     required this.title,
     required this.category,
     required this.amount,
     required this.date,
+    required this.percent,
+    required this.onTap,
   });
 }
 
@@ -422,46 +439,70 @@ class _TxItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = row.isGain ? AppColors.gain : AppColors.spent;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      onTap: row.onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                row.isGain ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                color: color,
+                size: 20,
+              ),
             ),
-            child: Icon(
-              row.isGain ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-              color: color,
-              size: 20,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(row.title,
+                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${row.category}${row.date != null ? " · ${Formatters.relative(row.date)}" : ""}',
+                    style: TextStyle(fontSize: 12, color: AppColors.lightMuted),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(row.title,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 2),
                 Text(
-                  '${row.category}${row.date != null ? " · ${Formatters.relative(row.date)}" : ""}',
-                  style: TextStyle(fontSize: 12, color: AppColors.lightMuted),
+                  Formatters.signedMoney(row.amount, gain: row.isGain),
+                  style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 14),
                 ),
+                if (row.percent > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3),
+                    child: Text(
+                      FinanceInsights.formatPercent(row.percent),
+                      style: TextStyle(
+                        color: color.withValues(alpha: 0.85),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
               ],
             ),
-          ),
-          Text(
-            Formatters.signedMoney(row.amount, gain: row.isGain),
-            style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 14),
-          ),
-        ],
+            const SizedBox(width: 2),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.lightMuted, size: 18),
+          ],
+        ),
       ),
     );
   }

@@ -13,9 +13,11 @@ abstract class Routes {
 
   static const gains = '/gains';
   static const gainForm = '/gains/form';
+  static const gainDetail = '/gains/detail';
 
   static const spents = '/spents';
   static const spentForm = '/spents/form';
+  static const spentDetail = '/spents/detail';
 
   static const categories = '/categories';
   static const profile = '/profile';

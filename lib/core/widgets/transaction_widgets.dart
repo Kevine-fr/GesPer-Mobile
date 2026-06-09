@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../utils/finance_insights.dart';
 import '../utils/formatters.dart';
 import '../values/app_colors.dart';
 
@@ -13,6 +14,9 @@ class TotalBanner extends StatelessWidget {
   final String label;
   final IconData icon;
 
+  /// Petit texte additionnel (ex. « 42,0 % de vos revenus »).
+  final String? caption;
+
   const TotalBanner({
     super.key,
     required this.total,
@@ -21,6 +25,7 @@ class TotalBanner extends StatelessWidget {
     required this.gradient,
     required this.label,
     required this.icon,
+    this.caption,
   });
 
   @override
@@ -70,6 +75,11 @@ class TotalBanner extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (caption != null) ...[
+                  const SizedBox(height: 4),
+                  Text(caption!,
+                      style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500)),
+                ],
               ],
             ),
           ),
@@ -97,6 +107,9 @@ class TransactionTile extends StatelessWidget {
   final bool isGain;
   final VoidCallback? onTap;
 
+  /// Part de la transaction sur le total (revenus ou dépenses). Affichée en pastille.
+  final double? percent;
+
   const TransactionTile({
     super.key,
     required this.title,
@@ -104,6 +117,7 @@ class TransactionTile extends StatelessWidget {
     required this.amount,
     required this.isGain,
     this.onTap,
+    this.percent,
   });
 
   @override
@@ -150,9 +164,26 @@ class TransactionTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                Formatters.signedMoney(amount, gain: isGain),
-                style: TextStyle(color: color, fontSize: 15, fontWeight: FontWeight.w700),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    Formatters.signedMoney(amount, gain: isGain),
+                    style: TextStyle(color: color, fontSize: 15, fontWeight: FontWeight.w700),
+                  ),
+                  if (percent != null && percent! > 0) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      FinanceInsights.formatPercent(percent!),
+                      style: TextStyle(
+                        color: color.withValues(alpha: 0.85),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
