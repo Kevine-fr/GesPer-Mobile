@@ -72,6 +72,7 @@ class GainsPage extends StatelessWidget {
                   ),
                 );
               }
+              final highlightId = c.recentlySavedId.value;
               return RefreshIndicator(
                 onRefresh: c.refresh,
                 child: ListView.separated(
@@ -82,6 +83,15 @@ class GainsPage extends StatelessWidget {
                   itemBuilder: (_, i) {
                     final g = c.gains[i];
                     final cat = catCtrl.byId(g.categorieId);
+                    final isNew = g.id == highlightId;
+                    final tile = TransactionTile(
+                      title: g.libelle ?? 'Revenu',
+                      subtitle: '${cat?.title ?? "—"} · ${Formatters.relative(g.createdAt)}',
+                      amount: g.sum,
+                      isGain: true,
+                      percent: FinanceInsights.percent(g.sum, c.total),
+                      onTap: () => Get.toNamed(Routes.gainDetail, arguments: g),
+                    );
                     return Dismissible(
                       key: ValueKey('gain-${g.id}'),
                       direction: DismissDirection.endToStart,
@@ -96,14 +106,16 @@ class GainsPage extends StatelessWidget {
                       ),
                       confirmDismiss: (_) => _confirmDelete(context),
                       onDismissed: (_) => c.remove(g.id),
-                      child: TransactionTile(
-                        title: g.libelle ?? 'Revenu',
-                        subtitle: '${cat?.title ?? "—"} · ${Formatters.relative(g.createdAt)}',
-                        amount: g.sum,
-                        isGain: true,
-                        percent: FinanceInsights.percent(g.sum, c.total),
-                        onTap: () => Get.toNamed(Routes.gainDetail, arguments: g),
-                      ).animate().fadeIn(duration: 280.ms, delay: (i * 50).ms).slideX(begin: 0.05, end: 0),
+                      child: isNew
+                          ? tile
+                              .animate(key: const ValueKey('hl'))
+                              .fadeIn(duration: 320.ms)
+                              .scaleXY(begin: 0.95, end: 1, duration: 520.ms, curve: Curves.easeOutBack)
+                              .shimmer(delay: 160.ms, duration: 1200.ms, color: AppColors.gain.withValues(alpha: 0.5))
+                          : tile
+                              .animate()
+                              .fadeIn(duration: 280.ms, delay: (i * 50).ms)
+                              .slideX(begin: 0.05, end: 0),
                     );
                   },
                 ),

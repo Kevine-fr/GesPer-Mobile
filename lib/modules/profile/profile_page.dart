@@ -134,6 +134,14 @@ class ProfilePage extends StatelessWidget {
                 ),
                 const Divider(height: 1),
                 ListTile(
+                  leading: const Icon(Icons.info_outline_rounded, color: AppColors.primary),
+                  title: const Text('À propos de GesPer'),
+                  subtitle: const Text('Découvrez tout ce que l’app sait faire'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Get.toNamed(Routes.about),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.logout_rounded, color: AppColors.spent),
                   title: const Text(AppStrings.logout, style: TextStyle(color: AppColors.spent)),
                   onTap: () async {

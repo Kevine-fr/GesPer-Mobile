@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
+import '../../app/routes/app_routes.dart';
 import '../../core/utils/app_toast.dart';
 import '../../core/utils/finance_insights.dart';
 import '../../core/utils/formatters.dart';
@@ -15,6 +16,7 @@ import '../../data/models/gain_model.dart';
 import '../../data/models/spent_model.dart';
 import '../categories/categorie_controller.dart';
 import '../gains/gain_controller.dart';
+import '../home/home_controller.dart';
 import 'spent_controller.dart';
 
 class SpentFormPage extends StatefulWidget {
@@ -222,7 +224,9 @@ class _SpentFormPageState extends State<SpentFormPage> {
 
     if (ok) {
       AppToast.success(isEdit ? 'Dépense modifiée.' : 'Dépense ajoutée.');
-      Get.back();
+      // Retour sur la liste des dépenses, actualisée, avec animation de la ligne.
+      HomeController.to.changeTab(2);
+      Get.until((route) => route.settings.name == Routes.home);
     }
   }
 }

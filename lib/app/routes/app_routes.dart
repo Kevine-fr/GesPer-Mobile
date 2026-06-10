@@ -21,6 +21,7 @@ abstract class Routes {
 
   static const categories = '/categories';
   static const profile = '/profile';
+  static const about = '/about';
 
   // Admin
   static const adminUsers = '/admin/users';

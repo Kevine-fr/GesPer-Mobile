@@ -13,6 +13,9 @@ class GainController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isSaving = false.obs;
 
+  /// Id du dernier revenu ajouté/modifié — sert à animer sa ligne dans la liste.
+  final Rxn<int> recentlySavedId = Rxn<int>();
+
   num get total => gains.fold<num>(0, (sum, g) => sum + g.sum);
 
   @override
@@ -50,6 +53,7 @@ class GainController extends GetxController {
           isReccurent: isReccurent,
         );
         gains.insert(0, created);
+        _flagRecentlySaved(created.id);
       } else {
         final updated = await _provider.updateMine(
           id: id,
@@ -60,6 +64,7 @@ class GainController extends GetxController {
         );
         final idx = gains.indexWhere((e) => e.id == id);
         if (idx != -1) gains[idx] = updated;
+        _flagRecentlySaved(updated.id);
       }
       return true;
     } catch (e) {
@@ -78,5 +83,13 @@ class GainController extends GetxController {
     } catch (e) {
       AppToast.error(toAppException(e).message);
     }
+  }
+
+  /// Marque une ligne comme « récemment enregistrée » puis efface le marqueur.
+  void _flagRecentlySaved(int id) {
+    recentlySavedId.value = id;
+    Future.delayed(const Duration(milliseconds: 2600), () {
+      if (recentlySavedId.value == id) recentlySavedId.value = null;
+    });
   }
 }

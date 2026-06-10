@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 
+import '../../app/routes/app_routes.dart';
 import '../../core/utils/app_toast.dart';
 import '../../core/utils/finance_insights.dart';
 import '../../core/utils/formatters.dart';
@@ -12,6 +13,7 @@ import '../../core/widgets/app_primary_button.dart';
 import '../../data/models/categorie_model.dart';
 import '../../data/models/gain_model.dart';
 import '../categories/categorie_controller.dart';
+import '../home/home_controller.dart';
 import 'gain_controller.dart';
 
 class GainFormPage extends StatefulWidget {
@@ -171,7 +173,9 @@ class _GainFormPageState extends State<GainFormPage> {
 
     if (ok) {
       AppToast.success(isEdit ? 'Revenu modifié.' : 'Revenu ajouté.');
-      Get.back();
+      // Retour sur la liste des revenus, actualisée, avec animation de la ligne.
+      HomeController.to.changeTab(1);
+      Get.until((route) => route.settings.name == Routes.home);
     }
   }
 }

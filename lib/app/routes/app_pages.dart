@@ -6,6 +6,7 @@ import '../../modules/auth/register/register_binding.dart';
 import '../../modules/auth/register/register_page.dart';
 import '../../modules/auth/verify_code/verify_code_binding.dart';
 import '../../modules/auth/verify_code/verify_code_page.dart';
+import '../../modules/about/about_page.dart';
 import '../../modules/categories/categories_binding.dart';
 import '../../modules/categories/categories_page.dart';
 import '../../modules/gains/gain_detail_page.dart';
@@ -80,6 +81,11 @@ abstract class AppPages {
       name: Routes.categories,
       page: () => const CategoriesPage(),
       binding: CategoriesBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.about,
+      page: () => const AboutPage(),
       transition: Transition.rightToLeft,
     ),
   ];

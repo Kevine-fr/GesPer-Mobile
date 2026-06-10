@@ -13,6 +13,9 @@ class SpentController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isSaving = false.obs;
 
+  /// Id de la dernière dépense ajoutée/modifiée — sert à animer sa ligne dans la liste.
+  final Rxn<int> recentlySavedId = Rxn<int>();
+
   num get total => spents.fold<num>(0, (sum, s) => sum + s.value);
 
   @override
@@ -52,6 +55,7 @@ class SpentController extends GetxController {
           isSpent: isSpent,
         );
         spents.insert(0, created);
+        _flagRecentlySaved(created.id);
       } else {
         final updated = await _provider.updateMine(
           id: id,
@@ -63,6 +67,7 @@ class SpentController extends GetxController {
         );
         final idx = spents.indexWhere((e) => e.id == id);
         if (idx != -1) spents[idx] = updated;
+        _flagRecentlySaved(updated.id);
       }
       return true;
     } catch (e) {
@@ -81,5 +86,13 @@ class SpentController extends GetxController {
     } catch (e) {
       AppToast.error(toAppException(e).message);
     }
+  }
+
+  /// Marque une ligne comme « récemment enregistrée » puis efface le marqueur.
+  void _flagRecentlySaved(int id) {
+    recentlySavedId.value = id;
+    Future.delayed(const Duration(milliseconds: 2600), () {
+      if (recentlySavedId.value == id) recentlySavedId.value = null;
+    });
   }
 }
