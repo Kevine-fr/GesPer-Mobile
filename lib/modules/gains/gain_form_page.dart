@@ -9,6 +9,7 @@ import '../../core/utils/formatters.dart';
 import '../../core/utils/validators.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
+import '../../core/widgets/app_dropdown.dart';
 import '../../core/widgets/app_primary_button.dart';
 import '../../data/models/categorie_model.dart';
 import '../../data/models/gain_model.dart';
@@ -111,16 +112,19 @@ class _GainFormPageState extends State<GainFormPage> {
               const SizedBox(height: 14),
               Obx(() {
                 final cats = catCtrl.gainCategories;
-                return DropdownButtonFormField<CategorieModel>(
-                  isExpanded: true,
+                return AppDropdown<CategorieModel>(
+                  label: 'Catégorie',
+                  prefixIcon: Icons.category_rounded,
                   value: _selectedCategorie,
-                  decoration: const InputDecoration(
-                    labelText: 'Catégorie',
-                    prefixIcon: Icon(Icons.category_rounded, size: 20),
-                  ),
-                  items: cats
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c.title)))
-                      .toList(),
+                  items: [
+                    for (final c in cats)
+                      appDropdownItem<CategorieModel>(
+                        value: c,
+                        label: c.title,
+                        dotColor: AppColors.gain,
+                        icon: Icons.savings_rounded,
+                      ),
+                  ],
                   onChanged: (c) => setState(() => _selectedCategorie = c),
                   validator: (v) => v == null ? 'Catégorie requise' : null,
                 );

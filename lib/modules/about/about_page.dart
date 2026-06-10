@@ -144,7 +144,7 @@ class _Hero extends StatelessWidget {
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.6),
         ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
         const SizedBox(height: 6),
-        Text(
+        const Text(
           AppStrings.appTagline,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 14, color: AppColors.lightMuted, height: 1.4),

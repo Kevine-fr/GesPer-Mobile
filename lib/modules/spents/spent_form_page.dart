@@ -9,6 +9,7 @@ import '../../core/utils/formatters.dart';
 import '../../core/utils/validators.dart';
 import '../../core/values/app_colors.dart';
 import '../../core/values/app_strings.dart';
+import '../../core/widgets/app_dropdown.dart';
 import '../../core/widgets/app_primary_button.dart';
 import '../../core/widgets/percent_badge.dart';
 import '../../data/models/categorie_model.dart';
@@ -127,14 +128,19 @@ class _SpentFormPageState extends State<SpentFormPage> {
               const SizedBox(height: 14),
               Obx(() {
                 final cats = catCtrl.spentCategories;
-                return DropdownButtonFormField<CategorieModel>(
-                  isExpanded: true,
+                return AppDropdown<CategorieModel>(
+                  label: 'Catégorie',
+                  prefixIcon: Icons.category_rounded,
                   value: _selectedCategorie,
-                  decoration: const InputDecoration(
-                    labelText: 'Catégorie',
-                    prefixIcon: Icon(Icons.category_rounded, size: 20),
-                  ),
-                  items: cats.map((c) => DropdownMenuItem(value: c, child: Text(c.title))).toList(),
+                  items: [
+                    for (final c in cats)
+                      appDropdownItem<CategorieModel>(
+                        value: c,
+                        label: c.title,
+                        dotColor: AppColors.spent,
+                        icon: Icons.shopping_cart_rounded,
+                      ),
+                  ],
                   onChanged: (c) => setState(() => _selectedCategorie = c),
                   validator: (v) => v == null ? 'Catégorie requise' : null,
                 );
@@ -142,22 +148,23 @@ class _SpentFormPageState extends State<SpentFormPage> {
               const SizedBox(height: 14),
               Obx(() {
                 final gains = GainController.to.gains;
-                return DropdownButtonFormField<GainModel?>(
-                  isExpanded: true,
+                return AppDropdown<GainModel?>(
+                  label: 'Lier à un revenu (optionnel)',
+                  prefixIcon: Icons.link_rounded,
                   value: _linkedGain,
-                  decoration: const InputDecoration(
-                    labelText: 'Lier à un revenu (optionnel)',
-                    prefixIcon: Icon(Icons.link_rounded, size: 20),
-                  ),
                   items: [
-                    const DropdownMenuItem<GainModel?>(value: null, child: Text('— aucun —')),
+                    appDropdownItem<GainModel?>(
+                      value: null,
+                      label: '— aucun —',
+                      dotColor: AppColors.lightMuted,
+                      icon: Icons.block_rounded,
+                    ),
                     for (final g in gains)
-                      DropdownMenuItem<GainModel?>(
+                      appDropdownItem<GainModel?>(
                         value: g,
-                        child: Text(
-                          '${g.libelle ?? "Revenu"} — ${Formatters.money(g.sum)}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        label: '${g.libelle ?? "Revenu"} — ${Formatters.money(g.sum)}',
+                        dotColor: AppColors.gain,
+                        icon: Icons.trending_up_rounded,
                       ),
                   ],
                   onChanged: (g) => setState(() => _linkedGain = g),
